@@ -1,0 +1,23 @@
+{
+  "name": "wall_art",
+  "version": "1.0.0",
+  "description": "Inspired by the wall mirror art.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "node -e 'require(`singlepagedevrefresh`)();'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josuerojasrojas/wall_art.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/josuerojasrojas/wall_art/issues"
+  },
+  "homepage": "https://github.com/josuerojasrojas/wall_art#readme",
+  "devDependencies": {
+    "singlepagedevrefresh": "^1.5.1"
+  }
+}

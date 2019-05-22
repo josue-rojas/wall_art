@@ -1,0 +1,14 @@
+/* background rgb(228, 79, 64) */
+/* rect rgb(234, 191, 48) */
+/* circle rgb(16, 41, 46) */
+body {
+  background-color: rgb(228, 79, 64);
+}
+
+.canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  min-height: 100vh;
+}
