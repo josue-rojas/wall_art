@@ -1,10 +1,3 @@
-function toRadians (angle) {
-  return angle * (Math.PI / 180);
-}
-const rad90 = toRadians(90);
-const COS90 = Math.cos(rad90);
-const SIN90 = Math.sin(rad90);
-
 class Block {
   constructor(x, y, w, h){
     this.x = x;
@@ -28,33 +21,38 @@ class Block {
 
   }
 
+  mouseAngle(mouse_e, canvasTopLeft){
+    let y = mouse_e.pageY - canvasTopLeft[1] + this.center_y;
+    let x = mouse_e.pageX - canvasTopLeft[0] + this.center_x;
+    // let y = canvasTopLeft[1] + this.center_y + mouse_e.pageY;
+    // let x = canvasTopLeft[0] + this.center_x + mouse_e.pageX ;
+    return Math.atan2(y, x);
+
+    // return -Math.atan2(mouse_e.pageY - canvasTopLeft[1] , mouse_e.pageX - canvasTopLeft[0] );
+
+    // return -Math.atan2(mouse_e.pageY - canvasTopLeft[1] + this.center_y, -(mouse_e.pageX - canvasTopLeft[0] + this.center_x));
+
+    // return Math.atan2(mouse_e.pageX - canvasTopLeft[0]+this.center_x- canvasTopLeft[mouse_e.pageX);
+    // return 90;
+  }
+
   // i found the rotatation of multi shapes confusing but this was helpful
-  rotate(ctx, angle){
-    // ctx.fillRect(this.x, this.y, this.w, this.h);
+  rotate(ctx, mouse_e, canvasTopLeft){
+    let angle = mouse_e && canvasTopLeft ? this.mouseAngle(mouse_e, canvasTopLeft) : null;
+    console.log(angle)
     ctx.save();
-    // console.log(this.center_x);
-    // ctx.fillRect(this.x, this.y, this.w, this.h);
     ctx.translate(this.center_x, this.center_y);
     ctx.fillStyle = 'rgb(234, 191, 48)';
-    // ctx.translate(250, 250);
-    ctx.rotate((Math.PI / 180) * this.angle);
-    // ctx.rotate((Math.PI / 180) * 90);
+    angle = null;
+    ctx.rotate(angle ? angle : (Math.PI / 180) * (this.angle));
     this.angle = (this.angle + 1)%360;
     ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
-    // ctx.translate(-this.center_x, -this.center_y);
-    // ctx.translate(-250, -250);
-
-    // ctx.translate(0, 0);
     ctx.restore();
   }
 
   draw(ctx){
-    // consol
     ctx.fillStyle = 'black';
     ctx.fillRect(this.x, this.y, this.w, this.h);
-    // ctx.translate(this.center_x, this.center_y);
-    // ctx.rotate((Math.PI / 180) * 1);
-    // ctx.translate(-this.center_x, -this.center_y);
   }
 }
 
@@ -90,47 +88,43 @@ function fillCanvasBlocks(canvas_w, canvas_h, block_w, block_h){
 let block1 = null;
 let blocks = [];
 function init(){
-  block1 = new Block(25, 25, 50, 15);
-  // blocks = fillCanvasBlocks(500, 500, 15, 50);
-  blocks = fillCanvasBlocks(500, 500, 50, 15);
-  window.requestAnimationFrame(draw);
-  blocks[0].consoleState();
-  blocks[1].consoleState();
+  blocks = fillCanvasBlocks(500, 500, 15, 50);
+  // blocks = fillCanvasBlocks(500, 500, 50, 15);
+  // window.requestAnimationFrame(draw);
+  // blocks[0].consoleState();
+  // blocks[1].consoleState();
 }
 
 
 let canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');
 
-requestAnimationFrame(draw);
 
-function draw(){
+function draw(mouse_e, canvasTopLeft){
 
   // ctx.globalCompositeOperation = 'destination-over';
   ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
-  // ctx.save();
-// rgb(228, 79, 64)
-  // let time = new Date();
-  // canvas.rotate(((2 * Math.PI) / 60) * time.getSeconds() + ((2 * Math.PI) / 60000) * time.getMilliseconds());
-  // canvas.rotate(((2 * Math.PI) / 6) * time.getSeconds() + ((2 * Math.PI) / 600) * time.getMilliseconds());
-  // block1.rotate(ctx);
-  // block1.draw(ctx);
-  // block1.rotate(ctx);
-  // ctx.rotate((Math.PI / 180) * 1);
-  // ctx.save();
+
 
   for(let i = 0; i < blocks.length; i++){
-    // blocks[i].draw(ctx);
-    blocks[i].rotate(ctx);
+    // blocks[i].rotate(ctx, mouse_e);
   }
-  // blocks[0].rotate(ctx);
-  // blocks[1].rotate(ctx);
+  // console.log(canvasTopLeft);
+  blocks[30].rotate(ctx, mouse_e, canvasTopLeft);
 
-
-  // console.log('block1', block1)
-
-  // window.requestAnimationFrame(draw);
-  requestAnimationFrame(draw);
+  // requestAnimationFrame(draw);
 }
 
 init();
+requestAnimationFrame(draw);
+
+var $canvas=$("#canvas");
+const canvasTopLeft=[$canvas.offset().left, $canvas.offset().top]
+// console.log(canvasTopLeft);
+
+$('#canvas').mousemove((event) => {
+  console.log(canvasTopLeft);
+
+  draw(event, canvasTopLeft);
+  console.log(event.pageX);
+});

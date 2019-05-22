@@ -5,10 +5,69 @@ body {
   background-color: rgb(228, 79, 64);
 }
 
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+
 .canvas-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
   min-height: 100vh;
+}
+
+.wall {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 500px;
+  height: 500px;
+  margin: auto;
+  flex-flow: column;
+}
+
+.row {
+  min-width: 100%;
+  display: flex;
+}
+
+.block {
+  width: 50px;
+  /* height: 50px; */
+  margin: 3px;
+  /* background-color: rgb(234, 191, 48); */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  /* transform: rotate(90deg); */
+}
+
+.rect {
+  display: block;
+  content: "";
+  background-color: rgb(234, 191, 48);
+  width: 15px;
+  height: 50px;
+}
+
+.rect::after {
+  display: block;
+  background-color: rgb(16, 41, 46);
+  width: 15px;
+  height: 15px;
+  content: "";
+  border-radius: 100%;
+  margin-top: 17.5px;
+}
+
+.cube {
+   -webkit-transform: translateZ(0);
+   -moz-transform: translateZ(0);
+   -ms-transform: translateZ(0);
+   -o-transform: translateZ(0);
+   transform: translateZ(0);
+   /* Other transform properties here */
 }
