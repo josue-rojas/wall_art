@@ -1,130 +1,64 @@
-class Block {
-  constructor(x, y, w, h){
-    this.x = x;
-    this.y = y;
-    this.w = w;
-    this.h = h;
-    this.angle = 0;
-    this.center_x = x + 0.5 * w;
-    this.center_y = y + 0.5 * h;
-    // this.draw = this.draw.bind(this);
-  }
+const MAX_COL = 8;
+const MAX_ROW = 6;
+const SIZE_BLOCK = 56; // width (or height which ever is bigger) + margin (left-right)
+const BLOCK = "<div class='block'><div class='rect'></div></div>";
 
-  consoleState(){
-    console.log('x', this.x);
-    console.log('y', this.y);
-    console.log('h', this.h);
-    console.log('w', this.w);
-    console.log('center_x', this.center_x);
-    console.log('center_y', this.center_y);
-    console.log('angle', this.angle);
+let $blocks = null;
+let blocksCenter = [];
 
-  }
-
-  mouseAngle(mouse_e, canvasTopLeft){
-    let y = mouse_e.pageY - canvasTopLeft[1] + this.center_y;
-    let x = mouse_e.pageX - canvasTopLeft[0] + this.center_x;
-    // let y = canvasTopLeft[1] + this.center_y + mouse_e.pageY;
-    // let x = canvasTopLeft[0] + this.center_x + mouse_e.pageX ;
-    return Math.atan2(y, x);
-
-    // return -Math.atan2(mouse_e.pageY - canvasTopLeft[1] , mouse_e.pageX - canvasTopLeft[0] );
-
-    // return -Math.atan2(mouse_e.pageY - canvasTopLeft[1] + this.center_y, -(mouse_e.pageX - canvasTopLeft[0] + this.center_x));
-
-    // return Math.atan2(mouse_e.pageX - canvasTopLeft[0]+this.center_x- canvasTopLeft[mouse_e.pageX);
-    // return 90;
-  }
-
-  // i found the rotatation of multi shapes confusing but this was helpful
-  rotate(ctx, mouse_e, canvasTopLeft){
-    let angle = mouse_e && canvasTopLeft ? this.mouseAngle(mouse_e, canvasTopLeft) : null;
-    console.log(angle)
-    ctx.save();
-    ctx.translate(this.center_x, this.center_y);
-    ctx.fillStyle = 'rgb(234, 191, 48)';
-    angle = null;
-    ctx.rotate(angle ? angle : (Math.PI / 180) * (this.angle));
-    this.angle = (this.angle + 1)%360;
-    ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
-    ctx.restore();
-  }
-
-  draw(ctx){
-    ctx.fillStyle = 'black';
-    ctx.fillRect(this.x, this.y, this.w, this.h);
-  }
-}
-
-// TODO: fix for shorter side space
-// a function to fill a canvas with blocks, returns array of blocks in their positions
-function fillCanvasBlocks(canvas_w, canvas_h, block_w, block_h){
-  let min_margin = 10; // default
-  let max_block_size = (block_w > block_h ? block_w : block_h) + min_margin; // since the block rotates the max is to avoid touching the top or bottom
-  // then we figure out how many columns and rows we have
-  let num_columns = Math.floor(canvas_w / max_block_size);
-  let num_rows = Math.floor(canvas_h / max_block_size);
-  // then we find the difference between each center point
-  let colunm_space = (canvas_w  - (num_columns * block_w)) / (num_columns + 1);
-  let row_space = (canvas_h  - (num_rows * (block_w))) / (num_rows + 1);
-  // console.log(colunm_space, row_space);
-  // console.log(num_rows, num_columns);
-  // and finally we create the blocks with the specs
-  let blocks = [];
-  let x = colunm_space;
-  let y = row_space;
-  for(let i = 0; i < num_columns; i++){
-    for(let j = 0; j < num_rows; j++){
-      blocks.push(new Block(x, y, block_w, block_h));
-      y += row_space + block_w;
+function fillWall(doc_w, doc_h, block_size, max_row, max_col){
+  // first we figure the amount of columsn and rows needed;
+  let num_columns = Math.floor(doc_w / block_size);
+  num_columns = max_col < num_columns ? max_col : num_columns;
+  let num_rows = Math.floor(doc_h / block_size);
+  num_rows = max_row < num_rows ? max_row : num_rows;
+  let wall = '';
+  for(let i = 0; i < num_rows; i++){
+    let row = "<div class='row'>";
+    for(let j = 0; j < num_columns; j++){
+      row += BLOCK;
     }
-    // blocks.push(new Block(x, y, block_w, block_h));
-    x += colunm_space + block_w;
-    y = row_space;
+    row += "</div>";
+    wall += row;
   }
-  return blocks;
+  return wall;
 }
 
-let block1 = null;
-let blocks = [];
-function init(){
-  blocks = fillCanvasBlocks(500, 500, 15, 50);
-  // blocks = fillCanvasBlocks(500, 500, 50, 15);
-  // window.requestAnimationFrame(draw);
-  // blocks[0].consoleState();
-  // blocks[1].consoleState();
+function resizeFunction(){
+  let window_w = $(document).width();
+  let window_h = $(document).height();
+  let wall = fillWall(window_w, window_h, SIZE_BLOCK, MAX_ROW, MAX_COL);
+  $('.wall').html(wall);
 }
 
-
-let canvas = document.getElementById('canvas');
-let ctx = canvas.getContext('2d');
-
-
-function draw(mouse_e, canvasTopLeft){
-
-  // ctx.globalCompositeOperation = 'destination-over';
-  ctx.clearRect(0, 0, canvas.width, canvas.height); // clear canvas
-
-
-  for(let i = 0; i < blocks.length; i++){
-    // blocks[i].rotate(ctx, mouse_e);
+function getBlockCenters($blocks){
+  let blocksCenter = [];
+  for(let i = 0; i < $blocks.length; i++){
+    $e = $($blocks[i]);
+    blocksCenter.push([$e.offset().left + $e.width() / 2, $e.offset().top + $e.height() / 2]);
   }
-  // console.log(canvasTopLeft);
-  blocks[30].rotate(ctx, mouse_e, canvasTopLeft);
-
-  // requestAnimationFrame(draw);
+  return blocksCenter
 }
 
-init();
-requestAnimationFrame(draw);
+$( window ).resize(function() {
+  // console.log('resized');
+  // console.table([$(document).height(), $(document).width()]);
+  resizeFunction();
+  $blocks = $('.block');
+  blocksCenter = getBlockCenters($blocks);
+});
 
-var $canvas=$("#canvas");
-const canvasTopLeft=[$canvas.offset().left, $canvas.offset().top]
-// console.log(canvasTopLeft);
+$( document ).ready(function() {
+  resizeFunction();
+  $blocks = $('.block');
+  blocksCenter = getBlockCenters($blocks);
+});
 
-$('#canvas').mousemove((event) => {
-  console.log(canvasTopLeft);
-
-  draw(event, canvasTopLeft);
-  console.log(event.pageX);
+$(window).mousemove((e) => {
+  for(let i = 0; i < $blocks.length; i++){
+    let angle = Math.atan2(e.pageX- blocksCenter[i][0],- (e.pageY- blocksCenter[i][1]) )*(180/Math.PI);
+    $($blocks[i]).css({ "-webkit-transform": 'rotate(' + (angle || 0) + 'deg)'});
+    $($blocks[i]).css({ '-moz-transform': 'rotate(' + (angle || 0) + 'deg)'});
+    $($blocks[i]).css({ 'transform': 'rotate(' + (angle || 0) + 'deg)'});
+  }
 });
